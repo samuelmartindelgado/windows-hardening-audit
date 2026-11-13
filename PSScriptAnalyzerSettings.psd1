@@ -1,4 +1,4 @@
-@{
+﻿@{
     Severity     = @('Error', 'Warning')
     ExcludeRules = @(
         # Write-Host se usa a propósito para la salida en colores de la consola
