@@ -1,0 +1,5 @@
+_encargo.md
+salida*/
+*.html
+*.json
+!PSScriptAnalyzerSettings.psd1
