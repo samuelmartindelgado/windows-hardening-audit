@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Pester y PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module Pester -MinimumVersion 5.5 -Force -SkipPublisherCheck -Scope CurrentUser
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Análisis estático (PSScriptAnalyzer)
+        shell: pwsh
+        run: |
+          $r = Invoke-ScriptAnalyzer -Path . -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
+          $r | Format-Table -AutoSize
+          if ($r | Where-Object Severity -eq 'Error') { throw 'PSScriptAnalyzer encontró errores' }
+
+      - name: Pruebas (Pester)
+        shell: pwsh
+        run: Invoke-Pester ./tests -CI -Output Detailed
+
+      - name: Auditoría real en PowerShell 7
+        shell: pwsh
+        run: ./Invoke-HardeningAudit.ps1 -OutputPath ./salida/pwsh7
+
+      - name: Auditoría real en Windows PowerShell 5.1
+        shell: powershell
+        run: ./Invoke-HardeningAudit.ps1 -OutputPath ./salida/ps51
+
+      - name: Guardar informes
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-hardening
+          path: ./salida
