@@ -8,7 +8,7 @@ jobs:
   test:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Instalar Pester y PSScriptAnalyzer
         shell: pwsh
@@ -36,7 +36,7 @@ jobs:
         run: ./Invoke-HardeningAudit.ps1 -OutputPath ./salida/ps51
 
       - name: Guardar informes
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: informe-hardening
           path: ./salida
